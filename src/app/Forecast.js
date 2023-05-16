@@ -6,6 +6,12 @@ const Home = () => {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [celsius, setCelsius] = useState(null);
+  const [fiveDaysWeatherInformation, setFiveDaysWeatherInformation] = useState([
+    null,
+  ]);
+  const [fiveDaysTimeInformation, setFiveDaysTimeInformation] = useState([
+    null,
+  ]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -13,6 +19,21 @@ const Home = () => {
     const constantKelvin = 273.15;
     const currentCelsius = parseInt(data - constantKelvin, 10);
     setCelsius(currentCelsius);
+  };
+
+  const forecastToShow = (data) => {
+    const fiveDaysGetTimeData = [];
+    const fiveDaysGetWeatherData = [];
+
+    data.forEach((element, index) => {
+      if (index >= 0 && index <= 5) {
+        fiveDaysGetTimeData.push(element.dt_txt);
+        fiveDaysGetWeatherData.push(element.weather[0].description);
+      }
+    });
+
+    setFiveDaysTimeInformation(fiveDaysGetTimeData);
+    setFiveDaysWeatherInformation(fiveDaysGetWeatherData);
   };
 
   const fetchWeather = async (e) => {
@@ -25,9 +46,14 @@ const Home = () => {
       );
       kelvinToCelsius(response.data.main.feels_like);
       setWeather(response.data);
-      console.log(response.data);
+
+      const responseFiveDays = await axios.get(
+        `http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${process.env.NEXT_PUBLIC_API_KEY}`
+      );
+      forecastToShow(responseFiveDays.data.list);
+      console.log(responseFiveDays);
     } catch (error) {
-      setError("Failed to fetch weather data");
+      setError(`Failed to fetch weather data: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -58,10 +84,17 @@ const Home = () => {
               src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
               alt="Weather icon"
             />
+            <h4>5 Days Forecast:</h4>
+            {fiveDaysWeatherInformation.map((info, index) => (
+              <p key={index}>
+                {fiveDaysTimeInformation[index]} - {info}
+              </p>
+            ))}
           </div>
         )
       )}
     </div>
   );
 };
+
 export default Home;
