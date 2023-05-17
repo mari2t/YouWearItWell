@@ -15,18 +15,19 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const kelvinToCelsius = (data) => {
+  //calculate kelvin to celsius
+  function kelvinToCelsius(data) {
     const constantKelvin = 273.15;
     const currentCelsius = parseInt(data - constantKelvin, 10);
     setCelsius(currentCelsius);
-  };
+  }
 
+  //Converting weather forecast information into a form that can be shown
   const forecastToShow = (data) => {
     const fiveDaysGetTimeData = [];
     const fiveDaysGetWeatherData = [];
-
     data.forEach((element, index) => {
-      if (index >= 0 && index <= 5) {
+      if (index >= 0 && index <= 10) {
         fiveDaysGetTimeData.push(element.dt_txt);
         fiveDaysGetWeatherData.push(element.weather[0].description);
       }
@@ -84,6 +85,8 @@ const Home = () => {
               src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
               alt="Weather icon"
             />
+            <h4>Today:</h4>
+            <h5>{new Date().toLocaleString()}</h5>
             <h4>5 Days Forecast:</h4>
             {fiveDaysWeatherInformation.map((info, index) => (
               <p key={index}>
