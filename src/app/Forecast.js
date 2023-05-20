@@ -1,4 +1,5 @@
 "use client";
+import styles from "./styles/forecast.module.css";
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -71,45 +72,53 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={fetchWeather}>
+    <div className={styles.container}>
+      <form className={styles.formContainer} onSubmit={fetchWeather}>
         <input
+          className={styles.inputCity}
           type="text"
           placeholder="Enter city"
           value={city}
           onChange={(e) => setCity(e.target.value)}
         />
-        <button type="submit">Get Weather</button>
+        <button className={styles.buttonGetWether} type="submit">
+          Get Weather
+        </button>
       </form>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : (
-        weather && (
-          <div>
-            <h3>{weather.name}</h3>
-            <p>{weather.weather[0].description}</p>
-            <p>{weather.main.feels_like}°C</p>
-            <img
-              src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
-              alt="Weather icon"
-            />
-            <img
-              src={clothesImage(weather.main.feels_like)}
-              alt="Appropriate clothes"
-            />
-            <h4>Today:</h4>
-            <h5>{new Date().toLocaleString()}</h5>
-            <h4>5 Days Forecast:</h4>
-            {forecast.map((info, index) => (
-              <p key={index}>
-                {info.time} - {info.weather} - {info.tempCelsius} ℃
+      <div className={styles.resultContainer}>
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : (
+          weather && (
+            <div>
+              <h3>{weather.name}</h3>
+              <p>Today : {new Date().toLocaleString()} </p>
+              <p>
+                {weather.weather[0].description} {weather.main.feels_like}°C
               </p>
-            ))}
-          </div>
-        )
-      )}
+              <div className={styles.resultImgContainer}>
+                <img
+                  src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
+                  alt="Weather icon"
+                />
+                <img
+                  src={clothesImage(weather.main.feels_like)}
+                  alt="Appropriate clothes"
+                />
+              </div>
+
+              <h4>5 Days Forecast:</h4>
+              {forecast.map((info, index) => (
+                <p key={index}>
+                  {info.time} - {info.weather} - {info.tempCelsius} ℃
+                </p>
+              ))}
+            </div>
+          )
+        )}
+      </div>
     </div>
   );
 };

@@ -1,0 +1,24 @@
+.container {
+}
+.formContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inputCity {
+  margin: 1rem;
+}
+.buttonGetWether {
+  margin: 1rem;
+}
+.resultContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.resultImgContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
