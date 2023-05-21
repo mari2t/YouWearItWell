@@ -2,6 +2,7 @@
 import styles from "./styles/forecast.module.css";
 import React, { useState } from "react";
 import axios from "axios";
+import TranslateWeatherDescription from "./TranslateWeatherDescription";
 
 // API base URLs
 const WEATHER_API_BASE_URL =
@@ -50,7 +51,7 @@ const Home = () => {
       );
       const newForecast = responseFiveDays.data.list.slice(0, 16).map((el) => ({
         time: el.dt_txt,
-        weather: el.weather[0].main,
+        weather: el.weather[0].description,
         tempCelsius: kelvinToCelsius(el.main.temp),
       }));
       setForecast(newForecast);
@@ -92,12 +93,15 @@ const Home = () => {
           <p>{error}</p>
         ) : (
           weather && (
-            <div>
+            <div className={styles.todayResultContainer}>
               <h3>{weather.name}</h3>
               <p>Today : {new Date().toLocaleString()} </p>
-              <p>
-                {weather.weather[0].description} {weather.main.feels_like}°C
-              </p>
+              <span>
+                <TranslateWeatherDescription
+                  description={weather.weather[0].description}
+                />{" "}
+                {weather.main.feels_like}°C
+              </span>
               <div className={styles.resultImgContainer}>
                 <img
                   src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
@@ -112,7 +116,9 @@ const Home = () => {
               <h4>5 Days Forecast:</h4>
               {forecast.map((info, index) => (
                 <p key={index}>
-                  {info.time} - {info.weather} - {info.tempCelsius} ℃
+                  {info.time} -{" "}
+                  <TranslateWeatherDescription description={info.weather} /> -{" "}
+                  {info.tempCelsius} ℃
                 </p>
               ))}
             </div>
