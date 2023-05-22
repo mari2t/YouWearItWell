@@ -2,7 +2,6 @@
 import styles from "./styles/forecast.module.css";
 import React, { useState } from "react";
 import axios from "axios";
-import TranslateWeatherDescription from "./TranslateWeatherDescription";
 
 // API base URLs
 const WEATHER_API_BASE_URL =
@@ -36,7 +35,7 @@ const Home = () => {
       const encodedCity = encodeURIComponent(city);
 
       const response = await axios.get(
-        `${WEATHER_API_BASE_URL}${encodedCity}&appid=${process.env.NEXT_PUBLIC_API_KEY}`
+        `${WEATHER_API_BASE_URL}${encodedCity}&appid=${process.env.NEXT_PUBLIC_API_KEY}&lang=ja`
       );
       setWeather({
         ...response.data,
@@ -47,7 +46,7 @@ const Home = () => {
       });
 
       const responseFiveDays = await axios.get(
-        `${FORECAST_API_BASE_URL}${encodedCity}&appid=${process.env.NEXT_PUBLIC_API_KEY}`
+        `${FORECAST_API_BASE_URL}${encodedCity}&appid=${process.env.NEXT_PUBLIC_API_KEY}&lang=ja`
       );
       const newForecast = responseFiveDays.data.list.slice(0, 16).map((el) => ({
         time: el.dt_txt,
@@ -94,19 +93,20 @@ const Home = () => {
         ) : (
           weather && (
             <div className={styles.todayResultContainer}>
-              <h3>{weather.name}</h3>
-              <p>Today : {new Date().toLocaleString()} </p>
-              <span>
-                <TranslateWeatherDescription
-                  description={weather.weather[0].description}
-                />{" "}
-                {weather.main.feels_like}°C
-              </span>
-              <div className={styles.resultImgContainer}>
-                <img
-                  src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
-                  alt="Weather icon"
-                />
+              <div className={styles.todayResultCity}>
+                <h3>{weather.name}</h3>
+              </div>
+              <div className={styles.todayResultDay}>
+                <p>今日 : {new Date().toLocaleString()} </p>
+                <span>
+                  {weather.weather[0].description} {weather.main.feels_like}°C
+                </span>
+                <div className={styles.resultImgContainer}>
+                  <img
+                    src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
+                    alt="Weather icon"
+                  />
+                </div>
                 <img
                   src={clothesImage(weather.main.feels_like)}
                   alt="Appropriate clothes"
@@ -116,9 +116,7 @@ const Home = () => {
               <h4>5 Days Forecast:</h4>
               {forecast.map((info, index) => (
                 <p key={index}>
-                  {info.time} -{" "}
-                  <TranslateWeatherDescription description={info.weather} /> -{" "}
-                  {info.tempCelsius} ℃
+                  {info.time} - {info.weather} - {info.tempCelsius} ℃
                 </p>
               ))}
             </div>
