@@ -1,6 +1,6 @@
 "use client";
 import styles from "./styles/forecast.module.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 // API base URLs
@@ -24,7 +24,52 @@ const Home = () => {
   const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [todayDaytime, setTodayDaytime] = useState({
+    month: null,
+    day: null,
+    weekday: null,
+    hour: null,
+  });
 
+  //今日の月日時間を取得
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+      const options = {
+        month: "long",
+        day: "numeric",
+        weekday: "long",
+        hour: "numeric",
+        minute: "numeric",
+      };
+      const dateTimeFormat = new Intl.DateTimeFormat("ja-JP", options);
+      const [
+        { value: month },
+        ,
+        { value: day },
+        ,
+        { value: weekday },
+        ,
+        { value: hour },
+      ] = dateTimeFormat.formatToParts(now);
+
+      setTodayDaytime({
+        month,
+        day,
+        weekday,
+        hour,
+      });
+    };
+
+    // Initial load
+    updateDateTime();
+
+    // Subsequent updates every minute
+    const intervalId = setInterval(updateDateTime, 60 * 1000);
+
+    // Cleanup function to clear the interval on unmount
+    return () => clearInterval(intervalId);
+  }, []);
   const kelvinToCelsius = (kelvin) => parseInt(kelvin - 273.15, 10);
 
   const fetchWeather = async (e) => {
@@ -95,6 +140,12 @@ const Home = () => {
             <div className={styles.todayResultContainer}>
               <div className={styles.todayResultCity}>
                 <h3>{weather.name}</h3>
+                <div>
+                  <p>Month: {todayDaytime.month}</p>
+                  <p>Day: {todayDaytime.day}</p>
+                  <p>Weekday: {todayDaytime.weekday}</p>
+                  <p>hour: {todayDaytime.hour}</p>
+                </div>
               </div>
               <div className={styles.todayResultDay}>
                 <p>今日 : {new Date().toLocaleString()} </p>

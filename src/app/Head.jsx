@@ -1,4 +1,4 @@
-import styles from "./styles/Head.module.css";
+import styles from "./styles/head.module.css";
 import React from "react";
 
 export default function Head() {
