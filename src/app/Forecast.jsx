@@ -29,9 +29,10 @@ const Home = () => {
     day: null,
     weekday: null,
     hour: null,
+    period: null,
   });
 
-  //今日の月日時間を取得
+  //今日の月日時間を取得データから変換
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
@@ -42,6 +43,7 @@ const Home = () => {
         hour: "numeric",
         minute: "numeric",
       };
+
       const dateTimeFormat = new Intl.DateTimeFormat("ja-JP", options);
       const [
         { value: month },
@@ -53,11 +55,19 @@ const Home = () => {
         { value: hour },
       ] = dateTimeFormat.formatToParts(now);
 
+      // Convert to 12-hour format manually
+      const hour24 = parseInt(hour, 10);
+      let hour12 = hour24 <= 12 ? hour24 : hour24 - 12;
+
+      // Determine if it's AM or PM
+      let period = hour24 < 12 ? "午前" : "午後";
+
       setTodayDaytime({
         month,
         day,
         weekday,
-        hour,
+        hour: hour12.toString(),
+        period, // set AM/PM
       });
     };
 
@@ -139,29 +149,28 @@ const Home = () => {
           weather && (
             <div className={styles.todayResultContainer}>
               <div className={styles.todayResultCity}>
-                <h3>{weather.name}</h3>
                 <div>
-                  <p>Month: {todayDaytime.month}</p>
-                  <p>Day: {todayDaytime.day}</p>
-                  <p>Weekday: {todayDaytime.weekday}</p>
-                  <p>hour: {todayDaytime.hour}</p>
+                  <p>
+                    {todayDaytime.month} 月{todayDaytime.day} 日
+                    {todayDaytime.weekday} 　{todayDaytime.period}
+                    {todayDaytime.hour} 時　
+                    {weather.name}　の天気
+                  </p>
                 </div>
               </div>
               <div className={styles.todayResultDay}>
-                <p>今日 : {new Date().toLocaleString()} </p>
-                <span>
-                  {weather.weather[0].description} {weather.main.feels_like}°C
-                </span>
+                <img
+                  src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
+                  alt="Weather icon"
+                />
+                <span>{weather.main.feels_like}°C</span>
+
                 <div className={styles.resultImgContainer}>
                   <img
-                    src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
-                    alt="Weather icon"
+                    src={clothesImage(weather.main.feels_like)}
+                    alt="Appropriate clothes"
                   />
                 </div>
-                <img
-                  src={clothesImage(weather.main.feels_like)}
-                  alt="Appropriate clothes"
-                />
               </div>
 
               <h4>5 Days Forecast:</h4>
