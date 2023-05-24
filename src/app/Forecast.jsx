@@ -99,7 +99,7 @@ const Home = () => {
           feels_like: kelvinToCelsius(response.data.main.feels_like),
         },
       });
-
+      console.log(response);
       const responseFiveDays = await axios.get(
         `${FORECAST_API_BASE_URL}${encodedCity}&appid=${process.env.NEXT_PUBLIC_API_KEY}&lang=ja`
       );
@@ -108,6 +108,7 @@ const Home = () => {
         weather: el.weather[0].description,
         tempCelsius: kelvinToCelsius(el.main.temp),
       }));
+      console.log(newForecast);
       setForecast(newForecast);
     } catch (error) {
       setError(`Failed to fetch weather data: ${error.toString()}`);
@@ -147,30 +148,33 @@ const Home = () => {
           <p>{error}</p>
         ) : (
           weather && (
-            <div className={styles.todayResultContainer}>
-              <div className={styles.todayResultCity}>
-                <div>
-                  <p>
-                    {todayDaytime.month} 月{todayDaytime.day} 日
-                    {todayDaytime.weekday} 　{todayDaytime.period}
-                    {todayDaytime.hour} 時　
-                    {weather.name}　の天気
-                  </p>
-                </div>
+            <div>
+              <div className={styles.todayResultTitle}>
+                <p>
+                  {todayDaytime.month} 月{todayDaytime.day} 日
+                  {todayDaytime.weekday} 　{todayDaytime.period}
+                  {todayDaytime.hour} 時　
+                  {weather.name}　の天気
+                </p>
               </div>
-              <div className={styles.todayResultDay}>
-                <img
-                  src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
-                  alt="Weather icon"
-                />
-                <span>{weather.main.feels_like}°C</span>
-
-                <div className={styles.resultImgContainer}>
+              <div className={styles.todayResultWether}>
+                <div>
                   <img
-                    src={clothesImage(weather.main.feels_like)}
-                    alt="Appropriate clothes"
+                    className={styles.todayResultWetherIcon}
+                    src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
+                    alt="Weather icon"
                   />
                 </div>
+                <span className={styles.todayResultWetherCelsius}>
+                  {weather.main.feels_like}°C
+                </span>
+              </div>
+              <div className={styles.todayResultWether}>
+                <img
+                  className={styles.todayResultCloth}
+                  src={clothesImage(weather.main.feels_like)}
+                  alt="Appropriate clothes"
+                />
               </div>
 
               <h4>5 Days Forecast:</h4>

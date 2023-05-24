@@ -24,7 +24,30 @@
   justify-content: center;
   align-items: center;
 }
-.todayResultCity {
+.todayResultTitle {
   justify-content: center;
+  display: flex;
+  text-align: center;
   align-items: center;
+}
+.todayResultWether {
+  justify-content: center;
+  display: flex;
+  text-align: center;
+  align-items: center;
+}
+.todayResultWetherIcon {
+  margin: 0.2rem;
+}
+
+.todayResultWetherCelsius {
+  margin: 0.2rem;
+}
+.todayResultCloth {
+  border-radius: 50%; /* 円形にするための値 */
+  border-style: solid;
+  border-color: burlywood;
+  overflow: hidden; /* 余分な部分を隠すために必要なオプション */
+  width: 60%;
+  height: 60%;
 }
