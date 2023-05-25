@@ -17,6 +17,14 @@ const TEMPERATURE_CLOTHES_MAP = [
   { min: 6, image: "/img/coat.jpg" },
   { min: null, image: "/img/glovesAndKnitHat.jpg" },
 ];
+const TEMPERATURE_RAINCLOTHES_MAP = [
+  { min: 26, image: "/img/nosleeve.jpg" },
+  { min: 22, image: "/img/shortsleeveWithUmbrella.jpg" },
+  { min: 17, image: "/img/longsleeve.jpg" },
+  { min: 12, image: "/img/sweater.jpg" },
+  { min: 6, image: "/img/coat.jpg" },
+  { min: null, image: "/img/glovesAndKnitHat.jpg" },
+];
 
 const Home = () => {
   const [city, setCity] = useState("");
@@ -80,8 +88,21 @@ const Home = () => {
     // Cleanup function to clear the interval on unmount
     return () => clearInterval(intervalId);
   }, []);
+  //取得データの単位をkから℃へ変換
   const kelvinToCelsius = (kelvin) => parseInt(kelvin - 273.15, 10);
 
+  //取得データのIDから雨、雪かを判定
+  const judgeRainOrSnow = (id) => {
+    let rainOrSnowData = null;
+    if (id <= 700) {
+      rainOrSnowData = 1;
+      return rainOrSnowData;
+    }
+    rainOrSnowData = 0;
+    return rainOrSnowData;
+  };
+
+  //お天気情報取得
   const fetchWeather = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -96,7 +117,12 @@ const Home = () => {
         ...response.data,
         main: {
           ...response.data.main,
+          id: response.data.weather[0].id,
           feels_like: kelvinToCelsius(response.data.main.feels_like),
+        },
+        weather: {
+          ...response.data.weather,
+          id: response.data.weather[0].id,
         },
       });
       console.log(response);
@@ -104,6 +130,7 @@ const Home = () => {
         `${FORECAST_API_BASE_URL}${encodedCity}&appid=${process.env.NEXT_PUBLIC_API_KEY}&lang=ja`
       );
       const newForecast = responseFiveDays.data.list.slice(0, 16).map((el) => ({
+        id: el.weather[0].id,
         time: el.dt_txt,
         weather: el.weather[0].description,
         tempCelsius: kelvinToCelsius(el.main.temp),
@@ -117,8 +144,16 @@ const Home = () => {
     }
   };
 
-  // Choose appropriate clothes based on temperature
-  const clothesImage = (temperature) => {
+  //温度による洋服画像を選択
+  const clothesImage = (id, temperature) => {
+    if (id <= 700) {
+      for (let i = 0; i < TEMPERATURE_RAINCLOTHES_MAP.length; i++) {
+        const { min, image } = TEMPERATURE_CLOTHES_MAP[i];
+        if (!min || temperature >= min) {
+          return image;
+        }
+      }
+    }
     for (let i = 0; i < TEMPERATURE_CLOTHES_MAP.length; i++) {
       const { min, image } = TEMPERATURE_CLOTHES_MAP[i];
       if (!min || temperature >= min) {
@@ -172,12 +207,15 @@ const Home = () => {
               <div className={styles.todayResultWether}>
                 <img
                   className={styles.todayResultCloth}
-                  src={clothesImage(weather.main.feels_like)}
+                  src={clothesImage(
+                    weather.weather.id,
+                    weather.main.feels_like
+                  )}
                   alt="Appropriate clothes"
                 />
               </div>
 
-              <h4>5 Days Forecast:</h4>
+              <h4>2 Days Forecast:</h4>
               {forecast.map((info, index) => (
                 <p key={index}>
                   {info.time} - {info.weather} - {info.tempCelsius} ℃
