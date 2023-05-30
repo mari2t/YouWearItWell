@@ -48,6 +48,21 @@
   border-style: solid;
   border-color: burlywood;
   overflow: hidden; /* 余分な部分を隠すために必要なオプション */
+  width: 20rem;
+  height: 40%;
+}
+.todayResultInOneDas {
+  display: flex;
+}
+.todayResultInOneDay {
+  display: flex;
+  flex-direction: column;
+}
+.todayResultClothInOneDay {
+  border-radius: 50%; /* 円形にするための値 */
+  border-style: solid;
+  border-color: burlywood;
+  overflow: hidden; /* 余分な部分を隠すために必要なオプション */
   width: 60%;
   height: 60%;
 }

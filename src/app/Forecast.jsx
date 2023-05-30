@@ -39,6 +39,7 @@ const Home = () => {
     hour: null,
     period: null,
   });
+  const [twoDaysForecast, setTwoDaysForecast] = useState([]);
 
   //今日の月日時間を取得データから変換
   useEffect(() => {
@@ -88,6 +89,7 @@ const Home = () => {
     // Cleanup function to clear the interval on unmount
     return () => clearInterval(intervalId);
   }, []);
+
   //取得データの単位をkから℃へ変換
   const kelvinToCelsius = (kelvin) => parseInt(kelvin - 273.15, 10);
 
@@ -110,6 +112,7 @@ const Home = () => {
     try {
       const encodedCity = encodeURIComponent(city);
 
+      //今日のデータを取得
       const response = await axios.get(
         `${WEATHER_API_BASE_URL}${encodedCity}&appid=${process.env.NEXT_PUBLIC_API_KEY}&lang=ja`
       );
@@ -126,10 +129,14 @@ const Home = () => {
         },
       });
       console.log(response);
+
+      //5日間３時間ごとのデータを取得
       const responseFiveDays = await axios.get(
         `${FORECAST_API_BASE_URL}${encodedCity}&appid=${process.env.NEXT_PUBLIC_API_KEY}&lang=ja`
       );
-      const newForecast = responseFiveDays.data.list.slice(0, 16).map((el) => ({
+
+      //直近16個のデータを格納
+      const newForecast = responseFiveDays.data.list.slice(3, 11).map((el) => ({
         id: el.weather[0].id,
         time: el.dt_txt,
         weather: el.weather[0].description,
@@ -162,6 +169,11 @@ const Home = () => {
     }
   };
 
+  //日にちと時間を見やすいように変換
+  const convertTimeToHour = (dateTimeString) => {
+    const date = new Date(dateTimeString);
+    return `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}時`;
+  };
   return (
     <div className={styles.container}>
       <form className={styles.formContainer} onSubmit={fetchWeather}>
@@ -215,12 +227,25 @@ const Home = () => {
                 />
               </div>
 
-              <h4>2 Days Forecast:</h4>
-              {forecast.map((info, index) => (
-                <p key={index}>
-                  {info.time} - {info.weather} - {info.tempCelsius} ℃
-                </p>
-              ))}
+              <h4>24h Forecast:</h4>
+              <div className={styles.todayResultInOneDas}>
+                {forecast.map((info, index) => (
+                  <div key={index} className={styles.todayResultInOneDay}>
+                    <span>{convertTimeToHour(info.time)}</span>
+                    <span>
+                      {info.weather} {info.tempCelsius} ℃
+                    </span>
+                    <img
+                      className={styles.todayResultClothInOneDay}
+                      src={clothesImage(
+                        weather.weather.id,
+                        weather.main.feels_like
+                      )}
+                      alt="Appropriate clothes"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )
         )}
