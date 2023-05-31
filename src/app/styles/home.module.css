@@ -1,0 +1,10 @@
+/* styles/Home.module.css */
+.home {
+  background-image: url("/img/backgroundImg.jpg"); /* publicのURLは/で参照できる */
+  background-color: rgba(0, 0, 0, 0.5);
+  background-blend-mode: multiply;
+  min-height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover; /* 画像をブラウザの幅に合わせる */
+}

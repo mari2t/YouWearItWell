@@ -1,19 +1,37 @@
+/* 入力フォーム */
 .formContainer {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
 .inputCity {
-  margin: 1rem;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  margin-bottom: 0.2rem;
 }
 .buttonGetWether {
-  margin: 1rem;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  margin-bottom: 0.2rem;
+  color: azure;
+  background-image: linear-gradient(to right, #868f96 0%, #596164 100%);
 }
-.resultContainer {
+/* 結果表示 */
+.resultLoadingAndError {
+  text-align: center;
+  color: azure;
+}
+.resultTodayAndForecast {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  justify-content: left;
+  color: azure;
+}
+.resultTodayAndForecastHalf {
+  margin: 0.4rem;
+  flex: 1 0 25%; /* flex-grow, flex-shrink, flex-basis */
 }
 .resultImgContainer {
   display: flex;
@@ -26,13 +44,11 @@
 }
 .todayResultTitle {
   justify-content: center;
-  display: flex;
   text-align: center;
   align-items: center;
 }
 .todayResultWether {
   justify-content: center;
-  display: flex;
   text-align: center;
   align-items: center;
 }
@@ -43,26 +59,41 @@
 .todayResultWetherCelsius {
   margin: 0.2rem;
 }
+.todayResultWetherCloth {
+  justify-content: center;
+  display: flex;
+  text-align: center;
+  align-items: center;
+}
 .todayResultCloth {
   border-radius: 50%; /* 円形にするための値 */
   border-style: solid;
-  border-color: burlywood;
+  border-color: rgb(53, 40, 23);
   overflow: hidden; /* 余分な部分を隠すために必要なオプション */
-  width: 20rem;
-  height: 40%;
+  width: 20%;
+  height: 20%;
 }
-.todayResultInOneDas {
-  display: flex;
+.resultTitle {
+  text-align: center;
 }
 .todayResultInOneDay {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.todayResultInOneDayFourContents {
+  display: flex;
+  text-align: center;
+  justify-content: center;
 }
 .todayResultClothInOneDay {
   border-radius: 50%; /* 円形にするための値 */
   border-style: solid;
-  border-color: burlywood;
+  border-color: rgb(53, 40, 23);
   overflow: hidden; /* 余分な部分を隠すために必要なオプション */
   width: 60%;
   height: 60%;
+  text-align: center;
+  justify-content: center;
 }

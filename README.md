@@ -2,7 +2,7 @@
 
 ## Overview
 
-天気と洋服を教えてくれるアプリです。（の予定）  
+天気と洋服を教えてくれるアプリです。  
 This application tells you the weather and the clothes you should wear.
 
 ## Features
@@ -13,4 +13,4 @@ This application tells you the weather and the clothes you should wear.
 
 ## Creation Date
 
-2023/5/7~
+2023/5/31

@@ -9,23 +9,51 @@ const WEATHER_API_BASE_URL =
 const FORECAST_API_BASE_URL =
   "http://api.openweathermap.org/data/2.5/forecast?q=";
 
+//服装URL
 const TEMPERATURE_CLOTHES_MAP = [
-  { min: 26, image: "/img/nosleeve.jpg" },
-  { min: 22, image: "/img/shortsleeve.jpg" },
-  { min: 17, image: "/img/longsleeve.jpg" },
-  { min: 12, image: "/img/sweater.jpg" },
-  { min: 6, image: "/img/coat.jpg" },
-  { min: null, image: "/img/glovesAndKnitHat.jpg" },
+  {
+    min: 26,
+    image: "/img/nosleeve.jpg",
+    imageRain: "/img/nosleeveWithUmbrella.jpg",
+    textCloth: "ノースリーブががおすすめです。",
+    textAdd: "熱中症に気を付けて。",
+  },
+  {
+    min: 22,
+    image: "/img/shortsleeve.jpg",
+    imageRain: "/img/shortsleeveWithUmbrella.jpg",
+    textCloth: "半袖がおすすめです。",
+    textAdd: "少し暑いかもしれません。",
+  },
+  {
+    min: 17,
+    image: "/img/longsleeve.jpg",
+    imageRain: "/img/longsleeveWithUmbrella.jpg",
+    textCloth: "長袖がおすすめです。",
+    textAdd: "少し寒いかもしれません。",
+  },
+  {
+    min: 12,
+    image: "/img/sweater.jpg",
+    imageRain: "/img/sweaterWithUmbrella.jpg",
+    textCloth: "セーターがおすすめです。",
+    textAdd: "寒いかもしれません。",
+  },
+  {
+    min: 6,
+    image: "/img/coat.jpg",
+    imageRain: "/img/coatWithUmbrella.jpg",
+    textCloth: "コートがおすすめです",
+    textAdd: "寒いようです。",
+  },
+  {
+    min: null,
+    image: "/img/glovesAndKnitHat.jpg",
+    imageRain: "/img/glovesAndKnitHatWithUmbrella.jpg",
+    textCloth: "厚手のコートがおすすめです。",
+    textAdd: "とても寒いようです。",
+  },
 ];
-const TEMPERATURE_RAINCLOTHES_MAP = [
-  { min: 26, image: "/img/nosleeve.jpg" },
-  { min: 22, image: "/img/shortsleeveWithUmbrella.jpg" },
-  { min: 17, image: "/img/longsleeve.jpg" },
-  { min: 12, image: "/img/sweater.jpg" },
-  { min: 6, image: "/img/coat.jpg" },
-  { min: null, image: "/img/glovesAndKnitHat.jpg" },
-];
-
 const Home = () => {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
@@ -93,17 +121,6 @@ const Home = () => {
   //取得データの単位をkから℃へ変換
   const kelvinToCelsius = (kelvin) => parseInt(kelvin - 273.15, 10);
 
-  //取得データのIDから雨、雪かを判定
-  const judgeRainOrSnow = (id) => {
-    let rainOrSnowData = null;
-    if (id <= 700) {
-      rainOrSnowData = 1;
-      return rainOrSnowData;
-    }
-    rainOrSnowData = 0;
-    return rainOrSnowData;
-  };
-
   //お天気情報取得
   const fetchWeather = async (e) => {
     e.preventDefault();
@@ -126,9 +143,9 @@ const Home = () => {
         weather: {
           ...response.data.weather,
           id: response.data.weather[0].id,
+          description: response.data.weather[0].description,
         },
       });
-      console.log(response);
 
       //5日間３時間ごとのデータを取得
       const responseFiveDays = await axios.get(
@@ -142,7 +159,7 @@ const Home = () => {
         weather: el.weather[0].description,
         tempCelsius: kelvinToCelsius(el.main.temp),
       }));
-      console.log(newForecast);
+
       setForecast(newForecast);
     } catch (error) {
       setError(`Failed to fetch weather data: ${error.toString()}`);
@@ -152,12 +169,16 @@ const Home = () => {
   };
 
   //温度による洋服画像を選択
-  const clothesImage = (id, temperature) => {
+  const getClothesImageUrlByWeather = (id, temperature) => {
+    //雨でない場合の定数 700より小さいと雨かそれに類似した天気
+    const RAIN = 700;
+
+    //雨かそうでないかで分岐
     if (id <= 700) {
-      for (let i = 0; i < TEMPERATURE_RAINCLOTHES_MAP.length; i++) {
-        const { min, image } = TEMPERATURE_CLOTHES_MAP[i];
+      for (let i = 0; i < TEMPERATURE_CLOTHES_MAP.length; i++) {
+        const { min, imageRain } = TEMPERATURE_CLOTHES_MAP[i];
         if (!min || temperature >= min) {
-          return image;
+          return imageRain;
         }
       }
     }
@@ -165,6 +186,33 @@ const Home = () => {
       const { min, image } = TEMPERATURE_CLOTHES_MAP[i];
       if (!min || temperature >= min) {
         return image;
+      }
+    }
+  };
+
+  //温度によるテキストを選択
+  const getClothesTextUrlByWeather = (id, temperature) => {
+    //雨でない場合の定数 700より小さいと雨かそれに類似した天気
+    const RAIN = 700;
+
+    //追加用のテキスト変数
+    let resultText = "";
+
+    //雨かそうでないかで分岐
+    if (id <= RAIN) {
+      for (let i = 0; i < TEMPERATURE_CLOTHES_MAP.length; i++) {
+        const { min, textCloth } = TEMPERATURE_CLOTHES_MAP[i];
+        if (!min || temperature >= min) {
+          resultText = `${textCloth}傘を忘れずに。`;
+          return resultText;
+        }
+      }
+    }
+    for (let i = 0; i < TEMPERATURE_CLOTHES_MAP.length; i++) {
+      const { min, textCloth, textAdd } = TEMPERATURE_CLOTHES_MAP[i];
+      if (!min || temperature >= min) {
+        resultText = `${textCloth}${textAdd}`;
+        return resultText;
       }
     }
   };
@@ -190,61 +238,75 @@ const Home = () => {
       </form>
       <div className={styles.resultContainer}>
         {loading ? (
-          <p>Loading...</p>
+          <p className={styles.resultLoadingAndError}>Loading...</p>
         ) : error ? (
-          <p>{error}</p>
+          <p className={styles.resultLoadingAndError}>{error}</p>
         ) : (
           weather && (
-            <div>
-              <div className={styles.todayResultTitle}>
-                <p>
-                  {todayDaytime.month} 月{todayDaytime.day} 日
-                  {todayDaytime.weekday} 　{todayDaytime.period}
-                  {todayDaytime.hour} 時　
-                  {weather.name}　の天気
-                </p>
-              </div>
-              <div className={styles.todayResultWether}>
-                <div>
-                  <img
+            <div className={styles.resultTodayAndForecast}>
+              <div className={styles.resultTodayAndForecastHalf}>
+                <div className={styles.todayResultTitle}>
+                  <h3>
+                    {todayDaytime.month} 月{todayDaytime.day} 日
+                    {todayDaytime.weekday} 　{todayDaytime.period}
+                    {todayDaytime.hour} 時　
+                    {weather.name}　の天気
+                  </h3>
+                </div>
+                <div className={styles.todayResultWether}>
+                  {/* アイコン取得                  <img
                     className={styles.todayResultWetherIcon}
                     src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
                     alt="Weather icon"
-                  />
-                </div>
-                <span className={styles.todayResultWetherCelsius}>
-                  {weather.main.feels_like}°C
-                </span>
-              </div>
-              <div className={styles.todayResultWether}>
-                <img
-                  className={styles.todayResultCloth}
-                  src={clothesImage(
-                    weather.weather.id,
-                    weather.main.feels_like
-                  )}
-                  alt="Appropriate clothes"
-                />
-              </div>
-
-              <h4>24h Forecast:</h4>
-              <div className={styles.todayResultInOneDas}>
-                {forecast.map((info, index) => (
-                  <div key={index} className={styles.todayResultInOneDay}>
-                    <span>{convertTimeToHour(info.time)}</span>
+                  /> */}
+                  <div>
+                    <p className={styles.todayResultWetherCelsius}>
+                      {weather.weather.description} {weather.main.feels_like}°C
+                    </p>
+                  </div>
+                  <div>
                     <span>
-                      {info.weather} {info.tempCelsius} ℃
-                    </span>
-                    <img
-                      className={styles.todayResultClothInOneDay}
-                      src={clothesImage(
+                      {getClothesTextUrlByWeather(
                         weather.weather.id,
                         weather.main.feels_like
                       )}
-                      alt="Appropriate clothes"
-                    />
+                    </span>
                   </div>
-                ))}
+                </div>
+                <div className={styles.todayResultWetherCloth}>
+                  <img
+                    className={styles.todayResultCloth}
+                    src={getClothesImageUrlByWeather(
+                      weather.weather.id,
+                      weather.main.feels_like
+                    )}
+                    alt="Appropriate clothes"
+                  />
+                </div>
+                <div></div>
+              </div>
+              <div className={styles.resultTodayAndForecastHalf}>
+                <h3 className={styles.resultTitle}>24時間の天気</h3>
+                <div className={styles.todayResultInOneDay}>
+                  <div className={styles.todayResultInOneDayFourContents}>
+                    {forecast.slice(0, 9).map((info, index) => (
+                      <div key={index} className={styles.todayResultInOneDay}>
+                        <span>{convertTimeToHour(info.time)}</span>
+                        <span>
+                          {info.weather} {info.tempCelsius} ℃
+                        </span>
+                        <img
+                          className={styles.todayResultClothInOneDay}
+                          src={getClothesImageUrlByWeather(
+                            info.id,
+                            info.tempCelsius
+                          )}
+                          alt="Appropriate clothes"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )

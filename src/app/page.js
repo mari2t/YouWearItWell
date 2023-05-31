@@ -1,12 +1,10 @@
 import React from "react";
-import Head from "./Head";
-import Forecast from "./Forecast";
+import Index from "./Index";
 
 const App = () => {
   return (
     <div>
-      <Head />
-      <Forecast />
+      <Index />
     </div>
   );
 };
