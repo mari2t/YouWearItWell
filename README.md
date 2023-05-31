@@ -7,6 +7,8 @@ This application tells you the weather and the clothes you should wear.
 
 ## Example
 
+## ![example.png](/public/img/example.png "example.png")
+
 ## Features
 
 - Next.js
