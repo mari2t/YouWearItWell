@@ -5,9 +5,9 @@ import axios from "axios";
 
 // API base URLs
 const WEATHER_API_BASE_URL =
-  "http://api.openweathermap.org/data/2.5/weather?q=";
+  "https://api.openweathermap.org/data/2.5/weather?q=";
 const FORECAST_API_BASE_URL =
-  "http://api.openweathermap.org/data/2.5/forecast?q=";
+  "https://api.openweathermap.org/data/2.5/forecast?q=";
 
 //服装URL
 const TEMPERATURE_CLOTHES_MAP = [
