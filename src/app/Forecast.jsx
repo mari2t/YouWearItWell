@@ -254,11 +254,6 @@ const Home = () => {
                   </h3>
                 </div>
                 <div className={styles.todayResultWether}>
-                  {/* アイコン取得                  <img
-                    className={styles.todayResultWetherIcon}
-                    src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
-                    alt="Weather icon"
-                  /> */}
                   <div>
                     <p className={styles.todayResultWetherCelsius}>
                       {weather.weather.description} {weather.main.feels_like}°C
