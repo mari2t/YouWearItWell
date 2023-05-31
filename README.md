@@ -5,6 +5,8 @@
 天気と洋服を教えてくれるアプリです。  
 This application tells you the weather and the clothes you should wear.
 
+## Example
+
 ## Features
 
 - Next.js
