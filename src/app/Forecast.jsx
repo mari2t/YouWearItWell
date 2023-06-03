@@ -67,7 +67,7 @@ const Home = () => {
     hour: null,
     period: null,
   });
-  const [twoDaysForecast, setTwoDaysForecast] = useState([]);
+  const [timezoneData, setTimezoneData] = useState([]);
 
   //今日の月日時間を取得データから変換
   useEffect(() => {
@@ -157,14 +157,24 @@ const Home = () => {
         },
       });
 
-      //直近16個のデータを格納
-      const newForecast = responseFiveDays.data.list.slice(3, 11).map((el) => ({
-        id: el.weather[0].id,
-        time: el.dt_txt,
-        weather: el.weather[0].description,
-        tempCelsius: kelvinToCelsius(el.main.temp),
-      }));
+      console.log(responseFiveDays.data.city.timezone);
+      //格納データを決定 暫定的に一つ目のデータからtimezone(Shift in second)取得
+      const timeShift = determineDataByTimezone(
+        responseFiveDays.data.city.timezone
+      );
+      setTimezoneData(timeShift);
 
+      //直近8個のデータを格納
+      const newForecast = responseFiveDays.data.list
+        .slice(timeShift, timeShift + 8)
+        .map((el) => ({
+          id: el.weather[0].id,
+          time: el.dt,
+          weather: el.weather[0].description,
+          tempCelsius: kelvinToCelsius(el.main.feels_like),
+        }));
+
+      console.log(newForecast);
       setForecast(newForecast);
     } catch (error) {
       setError(
@@ -173,6 +183,44 @@ const Home = () => {
       console.log("error.toString():", error.toString());
     } finally {
       setLoading(false);
+    }
+  };
+
+  //時差による直近のデータを判別
+  const determineDataByTimezone = (timezone) => {
+    //取得すべき初めのデータの配列番号
+    let arrayNumber = 0;
+
+    //３時間ごとの判定定数
+    const differentSecond = {
+      //responseData[0]が時差＋最大の場所のデータ
+      moreThanNineHours: 64799,
+      moreThanSixHours: 21599,
+      moreThanThreeHours: 10799,
+      moreThanZeroHours: 0,
+      moreThanMinusThreeHours: -10799,
+      moreThanMinusSixHours: -21599,
+      moreThanMinusNineHours: -64799,
+    };
+
+    console.log(timezone);
+    if (timezone > differentSecond.moreThanNineHours) {
+      return (arrayNumber = 0);
+    } else if (timezone > differentSecond.moreThanSixHours) {
+      return (arrayNumber = 1);
+    } else if (timezone > differentSecond.moreThanThreeHours) {
+      return (arrayNumber = 2);
+    } else if (timezone > differentSecond.moreThanZeroHours) {
+      return (arrayNumber = 3);
+    } else if (timezone > differentSecond.moreThanMinusThreeHours) {
+      return (arrayNumber = 4);
+    } else if (timezone > differentSecond.moreThanMinusSixHours) {
+      return (arrayNumber = 5);
+    } else if (timezone > differentSecond.moreThanMinusNineHours) {
+      return (arrayNumber = 6);
+    } else {
+      console.log("Timezone error");
+      return;
     }
   };
 
@@ -226,8 +274,9 @@ const Home = () => {
   };
 
   //日にちと時間を見やすいように変換
-  const convertTimeToHour = (dateTimeString) => {
-    const date = new Date(dateTimeString);
+  const convertTimeToHour = (dateInSecond) => {
+    const AccurateDateTime = dateInSecond + timezoneData;
+    const date = new Date(AccurateDateTime * 1000);
     return `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}時`;
   };
   return (
