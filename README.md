@@ -14,6 +14,7 @@ This application tells you the weather and the clothes you should wear.
 - Next.js
 - CSS Modules
 - OpenWetherAPI
+- Image Creator from Microsoft Bing
 
 ## Creation Date
 
