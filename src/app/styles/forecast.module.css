@@ -80,7 +80,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 .todayResultInOneDayFourContents {
   display: flex;
@@ -98,7 +97,7 @@
 }
 
 /* レスポンシブ設定 */
-@media (max-width: 1200px) {
+@media (max-width: 800px) {
   .todayResultCloth {
     border-radius: 50%; /* 円形にするための値 */
     border-style: solid;
@@ -106,12 +105,7 @@
     overflow: hidden; /* 余分な部分を隠すために必要なオプション */
     width: 30%;
   }
-  .todayResultInOneDay {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+
   .todayResultInOneDayFourContents {
     display: flex;
     flex-direction: column;
