@@ -157,7 +157,6 @@ const Home = () => {
         },
       });
 
-      console.log(responseFiveDays.data.city.timezone);
       //格納データを決定 暫定的に一つ目のデータからtimezone(Shift in second)取得
       const timeShift = determineDataByTimezone(
         responseFiveDays.data.city.timezone
@@ -174,7 +173,6 @@ const Home = () => {
           tempCelsius: kelvinToCelsius(el.main.feels_like),
         }));
 
-      console.log(newForecast);
       setForecast(newForecast);
     } catch (error) {
       setError(
@@ -203,7 +201,6 @@ const Home = () => {
       moreThanMinusNineHours: -64799,
     };
 
-    console.log(timezone);
     if (timezone > differentSecond.moreThanNineHours) {
       return (arrayNumber = 0);
     } else if (timezone > differentSecond.moreThanSixHours) {
