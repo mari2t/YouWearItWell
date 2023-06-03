@@ -93,7 +93,38 @@
   border-color: rgb(53, 40, 23);
   overflow: hidden; /* 余分な部分を隠すために必要なオプション */
   width: 60%;
-  height: 60%;
   text-align: center;
   justify-content: center;
+}
+
+/* レスポンシブ設定 */
+@media (max-width: 1200px) {
+  .todayResultCloth {
+    border-radius: 50%; /* 円形にするための値 */
+    border-style: solid;
+    border-color: rgb(53, 40, 23);
+    overflow: hidden; /* 余分な部分を隠すために必要なオプション */
+    width: 30%;
+  }
+  .todayResultInOneDay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .todayResultInOneDayFourContents {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+  }
+  .todayResultClothInOneDay {
+    border-radius: 50%; /* 円形にするための値 */
+    border-style: solid;
+    border-color: rgb(53, 40, 23);
+    overflow: hidden; /* 余分な部分を隠すために必要なオプション */
+    width: 30%;
+    text-align: center;
+    justify-content: center;
+  }
 }

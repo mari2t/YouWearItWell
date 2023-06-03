@@ -130,9 +130,12 @@ const Home = () => {
       const encodedCity = encodeURIComponent(city);
 
       //今日のデータを取得
-      const response = await axios.get(
-        `${WEATHER_API_BASE_URL}${encodedCity}&appid=${process.env.NEXT_PUBLIC_API_KEY}&lang=ja`
-      );
+      const response = await axios.get(`/api/weather`, {
+        params: {
+          encodedCity: encodedCity,
+        },
+      });
+
       setWeather({
         ...response.data,
         main: {
@@ -148,9 +151,11 @@ const Home = () => {
       });
 
       //5日間３時間ごとのデータを取得
-      const responseFiveDays = await axios.get(
-        `${FORECAST_API_BASE_URL}${encodedCity}&appid=${process.env.NEXT_PUBLIC_API_KEY}&lang=ja`
-      );
+      const responseFiveDays = await axios.get(`/api/forecast`, {
+        params: {
+          encodedCity: encodedCity,
+        },
+      });
 
       //直近16個のデータを格納
       const newForecast = responseFiveDays.data.list.slice(3, 11).map((el) => ({
@@ -162,7 +167,10 @@ const Home = () => {
 
       setForecast(newForecast);
     } catch (error) {
-      setError(`Failed to fetch weather data: ${error.toString()}`);
+      setError(
+        `お天気情報を取得できませんでした。Browser could not retrieve weather information.`
+      );
+      console.log("error.toString():", error.toString());
     } finally {
       setLoading(false);
     }
@@ -170,7 +178,7 @@ const Home = () => {
 
   //温度による洋服画像を選択
   const getClothesImageUrlByWeather = (id, temperature) => {
-    //雨でない場合の定数 700より小さいと雨かそれに類似した天気
+    //雨でない場合の定数：700より小さいと雨かそれに類似した天気
     const RAIN = 700;
 
     //雨かそうでないかで分岐
@@ -192,7 +200,7 @@ const Home = () => {
 
   //温度によるテキストを選択
   const getClothesTextUrlByWeather = (id, temperature) => {
-    //雨でない場合の定数 700より小さいと雨かそれに類似した天気
+    //雨でない場合の定数：700より小さいと雨かそれに類似した天気
     const RAIN = 700;
 
     //追加用のテキスト変数
@@ -281,7 +289,7 @@ const Home = () => {
                 <div></div>
               </div>
               <div className={styles.resultTodayAndForecastHalf}>
-                <h3 className={styles.resultTitle}>24時間の天気</h3>
+                <h3 className={styles.resultTitle}>これから24時間の天気</h3>
                 <div className={styles.todayResultInOneDay}>
                   <div className={styles.todayResultInOneDayFourContents}>
                     {forecast.slice(0, 9).map((info, index) => (
