@@ -118,9 +118,6 @@ const Home = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  //取得データの単位をkから℃へ変換
-  const kelvinToCelsius = (kelvin) => parseInt(kelvin - 273.15, 10);
-
   //お天気情報取得
   const fetchWeather = async (e) => {
     e.preventDefault();
@@ -141,7 +138,7 @@ const Home = () => {
         main: {
           ...response.data.main,
           id: response.data.weather[0].id,
-          feels_like: kelvinToCelsius(response.data.main.feels_like),
+          feels_like: parseInt(response.data.main.feels_like, 10),
         },
         weather: {
           ...response.data.weather,
@@ -157,11 +154,13 @@ const Home = () => {
         },
       });
 
-      //格納データを決定 暫定的に一つ目のデータからtimezone(Shift in second)取得
+      //timezone(Shift in second)から格納データを決定
       const timeShift = determineDataByTimezone(
         responseFiveDays.data.city.timezone
       );
-      setTimezoneData(timeShift);
+
+      //timezone(Shift in second)を取得
+      setTimezoneData(responseFiveDays.data.city.timezone);
 
       //直近8個のデータを格納
       const newForecast = responseFiveDays.data.list
@@ -170,7 +169,7 @@ const Home = () => {
           id: el.weather[0].id,
           time: el.dt,
           weather: el.weather[0].description,
-          tempCelsius: kelvinToCelsius(el.main.feels_like),
+          tempCelsius: parseInt(el.main.feels_like, 10),
         }));
 
       setForecast(newForecast);
@@ -191,7 +190,7 @@ const Home = () => {
 
     //３時間ごとの判定定数
     const differentSecond = {
-      //responseData[0]が時差＋最大の場所のデータ
+      //responseData[0]が時差進み最大(+12h)の場所のデータ
       moreThanNineHours: 64799,
       moreThanSixHours: 21599,
       moreThanThreeHours: 10799,
@@ -272,9 +271,21 @@ const Home = () => {
 
   //日にちと時間を見やすいように変換
   const convertTimeToHour = (dateInSecond) => {
+    //dateInSecond(UTC)をcityのtimezoneで補正
     const AccurateDateTime = dateInSecond + timezoneData;
+
+    // UNIX timestamp をミリ秒に変換
     const date = new Date(AccurateDateTime * 1000);
-    return `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}時`;
+
+    // ゼロを追加して2桁にするヘルパー関数
+    const zeroPad = (num, places) => String(num).padStart(places, "0");
+
+    // 日付と時間をフォーマット
+    const formattedTime = `${zeroPad(date.getUTCMonth() + 1, 2)}-${zeroPad(
+      date.getUTCDate(),
+      2
+    )} ${zeroPad(date.getUTCHours(), 2)}:${zeroPad(date.getUTCMinutes(), 2)}`;
+    return formattedTime;
   };
   return (
     <div className={styles.container}>
