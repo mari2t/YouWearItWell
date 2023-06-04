@@ -60,63 +60,8 @@ const Home = () => {
   const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [todayDaytime, setTodayDaytime] = useState({
-    month: null,
-    day: null,
-    weekday: null,
-    hour: null,
-    period: null,
-  });
   const [timezoneData, setTimezoneData] = useState([]);
-
-  //今日の月日時間を取得データから変換
-  useEffect(() => {
-    const updateDateTime = () => {
-      const now = new Date();
-      const options = {
-        month: "long",
-        day: "numeric",
-        weekday: "long",
-        hour: "numeric",
-        minute: "numeric",
-      };
-
-      const dateTimeFormat = new Intl.DateTimeFormat("ja-JP", options);
-      const [
-        { value: month },
-        ,
-        { value: day },
-        ,
-        { value: weekday },
-        ,
-        { value: hour },
-      ] = dateTimeFormat.formatToParts(now);
-
-      // Convert to 12-hour format manually
-      const hour24 = parseInt(hour, 10);
-      let hour12 = hour24 <= 12 ? hour24 : hour24 - 12;
-
-      // Determine if it's AM or PM
-      let period = hour24 < 12 ? "午前" : "午後";
-
-      setTodayDaytime({
-        month,
-        day,
-        weekday,
-        hour: hour12.toString(),
-        period, // set AM/PM
-      });
-    };
-
-    // Initial load
-    updateDateTime();
-
-    // Subsequent updates every minute
-    const intervalId = setInterval(updateDateTime, 60 * 1000);
-
-    // Cleanup function to clear the interval on unmount
-    return () => clearInterval(intervalId);
-  }, []);
+  const [displayCityName, setDisplayCityName] = useState([]);
 
   //お天気情報取得
   const fetchWeather = async (e) => {
@@ -145,6 +90,7 @@ const Home = () => {
           id: response.data.weather[0].id,
           description: response.data.weather[0].description,
         },
+        dt: response.data.dt,
       });
 
       //5日間３時間ごとのデータを取得
@@ -155,25 +101,19 @@ const Home = () => {
       });
       console.log("responseFiveDays", responseFiveDays);
 
-      //timezone(Shift in second)から格納データを決定
-      const timeShift = determineDataByTimezone(
-        responseFiveDays.data.city.timezone
-      );
-
       //timezone(Shift in second)を取得
       setTimezoneData(responseFiveDays.data.city.timezone);
 
       //直近8個のデータを格納
-      const newForecast = responseFiveDays.data.list
-        .slice(timeShift, timeShift + 8)
-        .map((el) => ({
-          id: el.weather[0].id,
-          time: el.dt,
-          weather: el.weather[0].description,
-          tempCelsius: parseInt(el.main.feels_like, 10),
-        }));
+      const newForecast = responseFiveDays.data.list.slice(0, 8).map((el) => ({
+        id: el.weather[0].id,
+        time: el.dt,
+        weather: el.weather[0].description,
+        tempCelsius: parseInt(el.main.feels_like, 10),
+      }));
 
       setForecast(newForecast);
+      setDisplayCityName(city);
     } catch (error) {
       setError(
         `お天気情報を取得できませんでした。Browser could not retrieve weather information.`
@@ -181,43 +121,6 @@ const Home = () => {
       console.log("error.toString():", error.toString());
     } finally {
       setLoading(false);
-    }
-  };
-
-  //時差による直近のデータを判別
-  const determineDataByTimezone = (timezone) => {
-    //取得すべき初めのデータの配列番号
-    let arrayNumber = 0;
-
-    //３時間ごとの判定定数
-    const differentSecond = {
-      //responseData[0]が時差進み最大(+12h)の場所のデータ
-      moreThanNineHours: 64799,
-      moreThanSixHours: 21599,
-      moreThanThreeHours: 10799,
-      moreThanZeroHours: 0,
-      moreThanMinusThreeHours: -10799,
-      moreThanMinusSixHours: -21599,
-      moreThanMinusNineHours: -64799,
-    };
-
-    if (timezone > differentSecond.moreThanNineHours) {
-      return (arrayNumber = 0);
-    } else if (timezone > differentSecond.moreThanSixHours) {
-      return (arrayNumber = 1);
-    } else if (timezone > differentSecond.moreThanThreeHours) {
-      return (arrayNumber = 2);
-    } else if (timezone > differentSecond.moreThanZeroHours) {
-      return (arrayNumber = 3);
-    } else if (timezone > differentSecond.moreThanMinusThreeHours) {
-      return (arrayNumber = 4);
-    } else if (timezone > differentSecond.moreThanMinusSixHours) {
-      return (arrayNumber = 5);
-    } else if (timezone > differentSecond.moreThanMinusNineHours) {
-      return (arrayNumber = 6);
-    } else {
-      console.log("Timezone error");
-      return;
     }
   };
 
@@ -313,10 +216,8 @@ const Home = () => {
               <div className={styles.resultTodayAndForecastHalf}>
                 <div className={styles.todayResultTitle}>
                   <h3>
-                    {todayDaytime.month} 月{todayDaytime.day} 日
-                    {todayDaytime.weekday} 　{todayDaytime.period}
-                    {todayDaytime.hour} 時　
-                    {weather.name}　の天気
+                    Current weather in {displayCityName} (
+                    {convertTimeToHour(weather.dt)})
                   </h3>
                 </div>
                 <div className={styles.todayResultWether}>
