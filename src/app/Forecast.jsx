@@ -153,6 +153,7 @@ const Home = () => {
           encodedCity: encodedCity,
         },
       });
+      console.log("responseFiveDays", responseFiveDays);
 
       //timezone(Shift in second)から格納データを決定
       const timeShift = determineDataByTimezone(
