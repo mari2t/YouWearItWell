@@ -99,7 +99,6 @@ const Home = () => {
           encodedCity: encodedCity,
         },
       });
-      console.log("responseFiveDays", responseFiveDays);
 
       //timezone(Shift in second)を取得
       setTimezoneData(responseFiveDays.data.city.timezone);
