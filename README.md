@@ -3,7 +3,9 @@
 ## Overview
 
 天気と洋服を教えてくれるアプリです。  
-This application tells you the weather and the clothes you should wear.
+検索した場所の現地時間、天気、おすすめの服装がわかります。  
+This application tells you the weather and the clothes you should wear.  
+You will know the local time, weather and clothing recommendations for that city.
 
 ## Example
 
