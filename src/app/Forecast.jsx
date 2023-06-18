@@ -3,12 +3,6 @@ import styles from "./styles/forecast.module.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-// API base URLs
-const WEATHER_API_BASE_URL =
-  "https://api.openweathermap.org/data/2.5/weather?q=";
-const FORECAST_API_BASE_URL =
-  "https://api.openweathermap.org/data/2.5/forecast?q=";
-
 //服装URL
 const TEMPERATURE_CLOTHES_MAP = [
   {
