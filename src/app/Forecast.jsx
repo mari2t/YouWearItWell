@@ -6,6 +6,13 @@ import axios from "axios";
 //服装URL
 const TEMPERATURE_CLOTHES_MAP = [
   {
+    min: 5000,
+    image: "/img/sunCloth.jpg",
+    imageRain: "/img/sunCloth.jpg",
+    textCloth: "宇宙服をしっかり着てください！",
+    textAdd: "You wear it well!",
+  },
+  {
     min: 26,
     image: "/img/nosleeve.jpg",
     imageRain: "/img/nosleeveWithUmbrella.jpg",
@@ -48,6 +55,13 @@ const TEMPERATURE_CLOTHES_MAP = [
     textAdd: "とても寒いようです。",
   },
 ];
+
+//地名リスト
+const TEMPERATURE_PLACE = ["(chose the place)", "London", "North pole", "Sun"];
+
+//太陽の温度
+const TEMPERATURE_SUN = 5500;
+
 const Home = () => {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
@@ -57,63 +71,118 @@ const Home = () => {
   const [timezoneData, setTimezoneData] = useState([]);
   const [displayCityName, setDisplayCityName] = useState([]);
 
+  //Sun
+  const sunWeather = () => {
+    const sunId = 800; //晴れ？を想定
+    const sunName = "sun";
+
+    // 日付用
+    const now = new Date();
+    const month = now.getMonth() + 1; // 修正点
+    const date = now.getDate(); // 修正点
+
+    const newForecast = Array.from({ length: 8 }, (_, index) => {
+      const future = new Date(now.getTime() + index * 3 * 60 * 60 * 1000); // 3時間ずつ加算
+      const month = future.getMonth() + 1;
+      const date = future.getDate();
+      const hour = future.getHours();
+      // 月、日、時間が1桁の場合、先頭に0を追加
+      const formattedMonth = month < 10 ? "0" + month : month;
+      const formattedDate = date < 10 ? "0" + date : date;
+      const formattedHour = hour < 10 ? "0" + hour : hour;
+
+      return {
+        id: index + 1,
+        time: `----/--/--`,
+        weather: "太陽フレア等。Solar flares, etc.",
+        tempCelsius: TEMPERATURE_SUN,
+      };
+    });
+
+    setForecast(newForecast);
+    setDisplayCityName(sunName);
+    setWeather({
+      main: {
+        id: sunId,
+        feels_like: TEMPERATURE_SUN,
+      },
+      weather: {
+        id: sunId,
+        description: "太陽フレアなど、太陽独自の活動があります。",
+      },
+      dt: Math.floor(Date.now() / 1000),
+    });
+  };
+
+  // ユーザーが選択した都市を設定
+  const handleListChange = (event) => {
+    setCity(event.target.value);
+  };
+
   //お天気情報取得
   const fetchWeather = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    try {
-      const encodedCity = encodeURIComponent(city);
-
-      //今日のデータを取得
-      const response = await axios.get(`/api/weather`, {
-        params: {
-          encodedCity: encodedCity,
-        },
-      });
-
-      setWeather({
-        ...response.data,
-        main: {
-          ...response.data.main,
-          id: response.data.weather[0].id,
-          feels_like: parseInt(response.data.main.feels_like, 10),
-        },
-        weather: {
-          ...response.data.weather,
-          id: response.data.weather[0].id,
-          description: response.data.weather[0].description,
-        },
-        dt: response.data.dt,
-      });
-
-      //5日間３時間ごとのデータを取得
-      const responseFiveDays = await axios.get(`/api/forecast`, {
-        params: {
-          encodedCity: encodedCity,
-        },
-      });
-
-      //timezone(Shift in second)を取得
-      setTimezoneData(responseFiveDays.data.city.timezone);
-
-      //直近8個のデータを格納
-      const newForecast = responseFiveDays.data.list.slice(0, 8).map((el) => ({
-        id: el.weather[0].id,
-        time: el.dt,
-        weather: el.weather[0].description,
-        tempCelsius: parseInt(el.main.feels_like, 10),
-      }));
-
-      setForecast(newForecast);
-      setDisplayCityName(city);
-    } catch (error) {
-      setError(
-        `お天気情報を取得できませんでした。Browser could not retrieve weather information.`
-      );
-      console.log("error.toString():", error.toString());
-    } finally {
+    if (city === "Sun") {
+      sunWeather();
       setLoading(false);
+    } else {
+      try {
+        const encodedCity = encodeURIComponent(city);
+
+        //今日のデータを取得
+        const response = await axios.get(`/api/weather`, {
+          params: {
+            encodedCity: encodedCity,
+          },
+        });
+
+        setWeather({
+          ...response.data,
+          main: {
+            ...response.data.main,
+            id: response.data.weather[0].id,
+            feels_like: parseInt(response.data.main.feels_like, 10),
+          },
+          weather: {
+            ...response.data.weather,
+            id: response.data.weather[0].id,
+            description: response.data.weather[0].description,
+          },
+          dt: response.data.dt,
+        });
+
+        //5日間３時間ごとのデータを取得
+        const responseFiveDays = await axios.get(`/api/forecast`, {
+          params: {
+            encodedCity: encodedCity,
+          },
+        });
+
+        //timezone(Shift in second)を取得
+        setTimezoneData(responseFiveDays.data.city.timezone);
+
+        //直近8個のデータを格納
+        const newForecast = responseFiveDays.data.list
+          .slice(0, 8)
+          .map((el) => ({
+            id: el.weather[0].id,
+            time: el.dt,
+            weather: el.weather[0].description,
+            tempCelsius: parseInt(el.main.feels_like, 10),
+          }));
+
+        setForecast(newForecast);
+        setDisplayCityName(city);
+      } catch (error) {
+        setError(
+          `お天気情報を取得できませんでした。Browser could not retrieve weather information.`
+        );
+        console.log("error.toString():", error.toString());
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -168,6 +237,11 @@ const Home = () => {
 
   //日にちと時間を見やすいように変換
   const convertTimeToHour = (dateInSecond) => {
+    let formattedTime = "";
+    if (weather.main.feels_like === TEMPERATURE_SUN) {
+      formattedTime = "??-?? ??:??";
+      return formattedTime;
+    }
     //dateInSecond(UTC)をcityのtimezoneで補正
     const AccurateDateTime = dateInSecond + timezoneData;
 
@@ -178,7 +252,7 @@ const Home = () => {
     const zeroPad = (num, places) => String(num).padStart(places, "0");
 
     // 日付と時間をフォーマット
-    const formattedTime = `${zeroPad(date.getUTCMonth() + 1, 2)}-${zeroPad(
+    formattedTime = `${zeroPad(date.getUTCMonth() + 1, 2)}-${zeroPad(
       date.getUTCDate(),
       2
     )} ${zeroPad(date.getUTCHours(), 2)}:${zeroPad(date.getUTCMinutes(), 2)}`;
@@ -186,18 +260,36 @@ const Home = () => {
   };
   return (
     <div className={styles.container}>
-      <form className={styles.formContainer} onSubmit={fetchWeather}>
-        <input
-          className={styles.inputCity}
-          type="text"
-          placeholder="Enter city"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-        />
-        <button className={styles.buttonGetWether} type="submit">
-          Get Weather
-        </button>
-      </form>
+      <div className={styles.formsContainer}>
+        <form className={styles.formContainer} onSubmit={fetchWeather}>
+          <input
+            className={styles.inputCity}
+            type="text"
+            placeholder="Enter city"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+          />
+          <button className={styles.buttonGetWether} type="submit">
+            Get Weather
+          </button>
+        </form>
+        <form className={styles.formContainer} onSubmit={fetchWeather}>
+          <select
+            className={styles.placeSelect}
+            value={city}
+            onChange={handleListChange}
+          >
+            {TEMPERATURE_PLACE.map((place, index) => (
+              <option key={index} value={place}>
+                {place}
+              </option>
+            ))}
+          </select>
+          <button className={styles.buttonGetWether} type="submit">
+            Get Weather from selected place
+          </button>
+        </form>
+      </div>
       <div className={styles.resultContainer}>
         {loading ? (
           <p className={styles.resultLoadingAndError}>Loading...</p>

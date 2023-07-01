@@ -18,6 +18,17 @@
   color: azure;
   background-image: linear-gradient(to right, #868f96 0%, #596164 100%);
 }
+.formsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.placeSelect {
+  margin-top: 1rem;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  margin-bottom: 0.2rem;
+}
 /* 結果表示 */
 .resultLoadingAndError {
   text-align: center;
