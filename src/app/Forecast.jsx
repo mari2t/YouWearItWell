@@ -74,7 +74,7 @@ const Home = () => {
   //Sun
   const sunWeather = () => {
     const sunId = 800; //晴れ？を想定
-    const sunName = "sun";
+    const sunName = "Sun";
 
     // 日付用
     const now = new Date();
@@ -108,7 +108,7 @@ const Home = () => {
       },
       weather: {
         id: sunId,
-        description: "太陽フレアなど、太陽独自の活動があります。",
+        description: "太陽フレア等、太陽独自の天気活動があります。",
       },
       dt: Math.floor(Date.now() / 1000),
     });
