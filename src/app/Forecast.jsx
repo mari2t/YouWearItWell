@@ -9,8 +9,8 @@ const TEMPERATURE_CLOTHES_MAP = [
     min: 5000,
     image: "/img/sunCloth.jpg",
     imageRain: "/img/sunCloth.jpg",
-    textCloth: "宇宙服をしっかり着てください！",
-    textAdd: "You wear it well!",
+    textCloth: "宇宙服がおすすめです。",
+    textAdd: "You wear it well !",
   },
   {
     min: 26,
@@ -60,7 +60,7 @@ const TEMPERATURE_CLOTHES_MAP = [
 const TEMPERATURE_PLACE = ["(chose the place)", "London", "North pole", "Sun"];
 
 //太陽の温度
-const TEMPERATURE_SUN = 5500;
+const TEMPERATURE_SUN = 6000;
 
 const Home = () => {
   const [city, setCity] = useState("");
@@ -108,7 +108,7 @@ const Home = () => {
       },
       weather: {
         id: sunId,
-        description: "太陽フレア等、太陽独自の天気活動があります。",
+        description: "太陽独自の天気活動があります。約",
       },
       dt: Math.floor(Date.now() / 1000),
     });

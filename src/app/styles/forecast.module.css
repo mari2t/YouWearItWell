@@ -109,6 +109,23 @@
 
 /* レスポンシブ設定 */
 @media (max-width: 800px) {
+  .formContainer {
+    flex-direction: column;
+  }
+
+  .inputCity,
+  .placeSelect,
+  .buttonGetWether {
+    display: block;
+    width: 100%;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .formsContainer {
+    flex-direction: column;
+  }
+
   .todayResultCloth {
     border-radius: 50%; /* 円形にするための値 */
     border-style: solid;
@@ -123,6 +140,7 @@
     text-align: center;
     justify-content: center;
   }
+
   .todayResultClothInOneDay {
     border-radius: 50%; /* 円形にするための値 */
     border-style: solid;
