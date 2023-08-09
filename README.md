@@ -21,3 +21,9 @@ You will know the local time, weather and clothing recommendations for that city
 ## Creation Date
 
 2023/5/31
+
+## Purpose of creation
+
+API を使ってみたくてつくりました。
+また、春秋は天気予報だけだと着ていく服装に悩むので  
+洋服の提案機能も入れて作ってみました。
