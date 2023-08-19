@@ -26,4 +26,4 @@ You will know the local time, weather and clothing recommendations for that city
 
 API を使ってみたくてつくりました。  
 また、春秋は天気予報だけだと着ていく洋服に悩むので  
-服装提案機能も入れました。
+服装提案機能も入れ、服装の色は温度とだいたい相関があるような色にしました。
