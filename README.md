@@ -25,5 +25,6 @@ You will know the local time, weather and clothing recommendations for that city
 ## Purpose of creation
 
 API を使ってみたくてつくりました。  
-また、春秋は天気予報だけだと着ていく洋服に悩むので  
-服装提案機能も入れ、服装の色は温度とだいたい相関があるような色にしました。
+また、天気予報だけだと着ていく洋服に悩むので  
+服装提案機能も入れ、服装の色は温度とだいたい相関があるような色にし、  
+雨の場合は傘画像にしました。
